@@ -1,6 +1,11 @@
 import random
 import string
 
+# ANSI color codes for terminal output
+RESET = "\033[0m"     # Reset text color to default
+GREEN = "\033[1;32m"  # Green for correct letters in correct position
+YELLOW = "\033[1;33m" # Yellow for correct letters in wrong position
+GRAY = "\033[1;90m"   # Gray for letters not in the word
 
 class Wordle:
     def __init__(self, word_list=None, max_attempts=6):
@@ -8,10 +13,10 @@ class Wordle:
         Initialize the Wordle game.
 
         Parameters:
-        - word_list: Optional list of 5-letter words to choose from. If None, uses default 100-word list.
-        - max_attempts: Maximum number of guesses allowed per round.
+        - word_list: Optional list of 5-letter words; defaults to 100-word list.
+        - max_attempts: Number of guesses allowed per round.
         """
-        # 100-word default list
+        # Default list of 5-letter words
         self.word_list = word_list or [
             "apple", "grape", "mango", "peach", "berry",
             "lemon", "melon", "chess", "flame", "brick",
@@ -36,125 +41,108 @@ class Wordle:
             "yodel", "night", "amber", "bliss", "crisp"
         ]
         self.max_attempts = max_attempts
-        # Initialize/reset game variables
-        self.reset_game()
+        self.reset_game()  # Initialize/reset game state
 
     def reset_game(self):
-        """
-        Resets all game variables for a new round.
-        Picks a new target word and clears guesses, feedback, and letter tracking.
-        """
-        self.target_word = random.choice(self.word_list)  # Random word for new round
-        self.attempts = 0  # Reset attempt counter
-        self.previous_guesses = []  # List to store past guesses and their feedback
-        self.correct_positions = ["_"] * 5  # Correct letters in correct positions
-        self.misplaced_letters = set()  # Letters in word but wrong position
-        self.remaining_letters = set(string.ascii_lowercase)  # Letters not yet ruled out
-
-    def check_guess(self, guess):
-        """
-        Evaluates a guess against the target word.
-
-        Returns:
-        - feedback: String showing result for each letter:
-            Uppercase = correct position
-            Lowercase = correct letter, wrong position
-            '_' = letter not in word
-        Updates:
-        - correct_positions, misplaced_letters, remaining_letters
-        """
-        feedback = ["_"] * 5
-        target_letters = list(self.target_word)
-
-        # Pass 1: Correct letters in correct positions
-        for i, letter in enumerate(guess):
-            if letter == target_letters[i]:
-                feedback[i] = letter.upper()
-                self.correct_positions[i] = letter.upper()
-                target_letters[i] = None  # Remove matched letter
-                if letter in self.misplaced_letters:
-                    self.misplaced_letters.remove(letter)
-                if letter in self.remaining_letters:
-                    self.remaining_letters.remove(letter)
-
-        # Pass 2: Correct letters in wrong positions
-        for i, letter in enumerate(guess):
-            # Only consider letters not already correctly placed
-            if feedback[i] == "_" and letter in target_letters:
-                if letter.upper() not in self.correct_positions:
-                    feedback[i] = letter.lower()
-                    self.misplaced_letters.add(letter)
-                target_letters[target_letters.index(letter)] = None
-                if letter in self.remaining_letters:
-                    self.remaining_letters.remove(letter)
-
-        # Remove letters not in the word from remaining_letters
-        for letter in guess:
-            if letter not in self.target_word and letter in self.remaining_letters:
-                self.remaining_letters.remove(letter)
-
-        return "".join(feedback)
-
-    def display_status(self):
-        """
-        Displays the current state of the game:
-        - Previous guesses with feedback
-        - Letters correctly positioned
-        - Misplaced letters
-        - Remaining letters that could still be guessed
-        """
-        print("\nPrevious Guesses:")
-        for guess, feedback in self.previous_guesses:
-            print(f"{guess} -> {feedback}")
-
-        print("\nCorrect Positions: ", " ".join(self.correct_positions))
-        print("Misplaced Letters: ", " ".join(sorted(self.misplaced_letters)))
-        print("Remaining Letters: ", " ".join(sorted(self.remaining_letters)))
-        print("-" * 40)
+        """Start a new game with a random target word and reset all tracking."""
+        self.target_word = random.choice(self.word_list)  # Choose a new target word
+        self.attempts = 0  # Reset the number of attempts
+        self.previous_guesses = []  # Store previous guesses with feedback
+        # Track status of each letter: "unused", "correct", "present", or "absent"
+        self.letter_status = {ch: "unused" for ch in string.ascii_lowercase}
 
     def get_guess(self):
-        """
-        Prompts the player to input a valid 5-letter word.
-        Enforces length and alphabetic input.
-        """
+        """Prompt the player to input a valid 5-letter guess."""
         while True:
-            guess = input(f"Attempt {self.attempts + 1}/{self.max_attempts} (Enter 5 letters): ").lower()
+            guess = input(f"Attempt {self.attempts + 1}/{self.max_attempts}: ").lower()
             if len(guess) != 5:
-                print("You must enter exactly 5 letters.")
+                print("Enter exactly 5 letters.")
             elif not guess.isalpha():
-                print("Please enter only alphabetic letters.")
+                print("Use only alphabetic letters.")
             else:
                 return guess
 
-    def play_round(self):
+    def check_guess(self, guess):
         """
-        Plays a single round of Wordle.
-        Handles all guesses until the word is guessed or attempts run out.
-        """
-        print(f"Welcome to Wordle! Guess the 5-letter word.")
-        while self.attempts < self.max_attempts:
-            guess = self.get_guess()
-            self.attempts += 1
-            feedback = self.check_guess(guess)
-            self.previous_guesses.append((guess, feedback))
-            self.display_status()
+        Check a player's guess against the target word and generate feedback.
 
-            if guess == self.target_word:
-                print(f"Congratulations! You guessed the word '{self.target_word}' in {self.attempts} attempts.")
+        Returns:
+        - A list of 5 items, each being "correct", "present", or "absent",
+          representing the status of each letter in the guess.
+        """
+        feedback = ["absent"] * 5          # Default feedback
+        target_letters = list(self.target_word)  # Convert target word to list for processing
+
+        # --- First pass: correct letters in the correct positions ---
+        for i, letter in enumerate(guess):
+            if letter == target_letters[i]:
+                feedback[i] = "correct"
+                target_letters[i] = None  # Remove matched letter to avoid duplicate counting
+
+        # --- Second pass: correct letters in wrong positions ---
+        for i, letter in enumerate(guess):
+            if feedback[i] == "absent" and letter in target_letters:
+                feedback[i] = "present"
+                # Remove the letter from target letters to prevent double-counting
+                target_letters[target_letters.index(letter)] = None
+
+        # --- Update the keyboard letters status ---
+        for i, letter in enumerate(guess):
+            if feedback[i] == "correct":
+                self.letter_status[letter] = "correct"
+            elif feedback[i] == "present" and self.letter_status[letter] != "correct":
+                self.letter_status[letter] = "present"
+            elif feedback[i] == "absent":
+                self.letter_status[letter] = "absent"
+
+        return feedback
+
+    def display(self):
+        """Display previous guesses with colors and remaining letters on the keyboard."""
+        print("\nPrevious guesses:")
+        for guess, feedback in self.previous_guesses:
+            line = ""
+            for i, letter in enumerate(guess):
+                # Choose color based on feedback
+                color = GREEN if feedback[i] == "correct" else YELLOW if feedback[i] == "present" else GRAY
+                line += f"{color}{letter}{RESET}"
+            print(line)
+
+        # --- Display keyboard: only letters not absent ---
+        print("\nKeyboard:")
+        for ch in string.ascii_lowercase:
+            status = self.letter_status[ch]
+            if status == "absent":
+                continue  # Remove letters not in the word
+            color = GREEN if status == "correct" else YELLOW if status == "present" else RESET
+            print(f"{color}{ch}{RESET}", end=" ")
+        print("\n" + "-" * 40)
+
+    def play_round(self):
+        """Play a single round of Wordle until the word is guessed or attempts run out."""
+        print("Welcome to Wordle! Guess the 5-letter word.")
+        while self.attempts < self.max_attempts:
+            guess = self.get_guess()                 # Get valid guess from user
+            self.attempts += 1                       # Increment attempt counter
+            feedback = self.check_guess(guess)       # Check guess against target word
+            self.previous_guesses.append((guess, feedback))  # Store guess and feedback
+            self.display()                           # Show colored guesses and keyboard
+
+            # Check for win: all letters correct
+            if all(f == "correct" for f in feedback):
+                print(f"You won! The word was '{self.target_word}'.")
                 return
 
-        print(f"You've used all attempts. The word was '{self.target_word}'.")
+        # Player ran out of attempts
+        print(f"You lost! The word was '{self.target_word}'.")
 
     def play(self):
-        """
-        Main game loop.
-        Allows the player to play multiple rounds until they choose to quit.
-        """
+        """Main game loop allowing multiple rounds until the player quits."""
         while True:
-            self.play_round()
-            choice = input("Do you want to play again? (y/n): ").lower()
+            self.play_round()  # Play one round
+            choice = input("Play again? (y/n): ").lower()
             if choice == "y":
-                self.reset_game()
+                self.reset_game()  # Reset game for new round
             else:
-                print("Thanks for playing Wordle!")
+                print("Thanks for playing!")
                 break
