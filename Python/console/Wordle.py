@@ -1,16 +1,16 @@
 import random
 import string
 
-# ANSI color codes for terminal output
-RESET = "\033[0m"     # Reset text color to default
-GREEN = "\033[1;32m"  # Green for correct letters in correct position
-YELLOW = "\033[1;33m" # Yellow for correct letters in wrong position
-GRAY = "\033[1;90m"   # Gray for letters not in the word
+# ANSI color codes
+RESET = "\033[0m"
+GREEN = "\033[1;32m"   # Correct position
+YELLOW = "\033[1;33m"  # Correct letter, wrong position
+GRAY = "\033[1;90m"    # Not in word
 
 class Wordle:
     def __init__(self, word_list=None, max_attempts=6):
         """
-        Initialize the Wordle game.
+        Initialize Wordle game.
 
         Parameters:
         - word_list: Optional list of 5-letter words; defaults to 100-word list.
@@ -120,7 +120,13 @@ class Wordle:
 
     def play_round(self):
         """Play a single round of Wordle until the word is guessed or attempts run out."""
+        # --- Show short explanation at start ---
         print("Welcome to Wordle! Guess the 5-letter word.")
+        print(f"{GREEN}Green{RESET}: Correct letter in the correct position")
+        print(f"{YELLOW}Yellow{RESET}: Correct letter but wrong position")
+        print(f"{GRAY}Gray{RESET}: Letter not in the word")
+        print("-" * 40)
+
         while self.attempts < self.max_attempts:
             guess = self.get_guess()                 # Get valid guess from user
             self.attempts += 1                       # Increment attempt counter
@@ -130,11 +136,11 @@ class Wordle:
 
             # Check for win: all letters correct
             if all(f == "correct" for f in feedback):
-                print(f"You won! The word was '{self.target_word}'.")
+                print(f"🎉 You won! The word was '{self.target_word}'.")
                 return
 
         # Player ran out of attempts
-        print(f"You lost! The word was '{self.target_word}'.")
+        print(f"😢 You lost! The word was '{self.target_word}'.")
 
     def play(self):
         """Main game loop allowing multiple rounds until the player quits."""
