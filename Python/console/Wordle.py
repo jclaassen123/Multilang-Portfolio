@@ -27,13 +27,13 @@ class Wordle:
             "olive", "pixel", "queen", "quilt", "radio",
             "robot", "salsa", "scout", "tango", "tempo",
             "umbra", "uncle", "vocal", "vivid", "watch",
-            "waltz", "xenon", "xylem", "yacht", "yield",
+            "waltz", "quick", "brown", "yacht", "yield",
             "zebra", "zesty", "acorn", "brave", "caper",
             "daisy", "ember", "frost", "glint", "haunt",
             "inbox", "jolly", "karma", "latch", "mirth",
             "nudge", "orbit", "plume", "quark", "raven",
             "swirl", "trove", "ultra", "vixen", "wreak",
-            "yodel", "zonal", "amber", "bliss", "crisp"
+            "yodel", "night", "amber", "bliss", "crisp"
         ]
         self.max_attempts = max_attempts
         # Initialize/reset game variables
