@@ -1,13 +1,22 @@
 import random
 
+
 class Wordle:
+    """
+    Wordle game logic class.
+
+    Features:
+    - Randomly selects a target word from a list
+    - Tracks guesses and provides feedback using colored emojis
+    - Checks for game over conditions (win/loss)
+    """
+
     def __init__(self, word_list=None):
         """
-        Initialize the Wordle game logic.
+        Initialize the Wordle game.
 
-        Parameters:
-        - word_list: Optional list of 5-letter words to choose from.
-                     If None, uses the default list.
+        Args:
+            word_list (list, optional): Custom list of words to use. Defaults to a preset list.
         """
         # Use provided word list or default list
         self.word_list = word_list or [
@@ -33,69 +42,61 @@ class Wordle:
             "swirl", "trove", "ultra", "vixen", "wreak",
             "yodel", "night", "amber", "bliss", "crisp"
         ]
-        # Initialize the game state
+        # Start a new game
         self.reset_game()
 
     def reset_game(self):
         """
-        Start a new game:
-        - Randomly select a target word
+        Reset the game state:
+        - Pick a random target word
         - Clear previous attempts
         - Set maximum allowed attempts
         """
-        self.target_word = random.choice(self.word_list)  # Randomly pick target word
-        self.attempts = []                                # Clear attempts history
-        self.max_attempts = 6                             # Standard Wordle has 6 attempts
-        print(f"Target word: {self.target_word}") # Optional debug output
+        self.target_word = random.choice(self.word_list)
+        self.attempts = []
+        self.max_attempts = 6
+        # Debug print to check target word (can be removed in production)
+        print(f"Target word: {self.target_word}")
 
     def guess(self, word):
         """
-        Process a guess from the player.
+        Process a guessed word and return feedback.
 
-        Parameters:
-        - word: 5-letter string guessed by the player
+        Args:
+            word (str): The guessed word
 
         Returns:
-        - A string of 5 symbols representing feedback:
-          🟩 = correct letter, correct position
-          🟨 = correct letter, wrong position
-          ⬜ = letter not in word
+            str: Feedback string using colored emojis
         """
         word = word.lower()
         if len(word) != 5:
-            return "Word must be 5 letters!"  # Input validation
+            return "Word must be 5 letters!"
 
         feedback = ""
+        # Compare guess to target word
         for i in range(5):
             if word[i] == self.target_word[i]:
-                feedback += "🟩"  # Correct letter, correct spot
+                feedback += "🟩"  # Correct letter in correct position
             elif word[i] in self.target_word:
-                feedback += "🟨"  # Correct letter, wrong spot
+                feedback += "🟨"  # Correct letter in wrong position
             else:
-                feedback += "⬜"  # Letter not in the target word
+                feedback += "⬜"  # Letter not in word
 
-        # Record this guess and its feedback
+        # Record this guess and feedback
         self.attempts.append((word, feedback))
         return feedback
 
     def is_game_over(self):
         """
-        Check if the game has ended, either by win or reaching max attempts.
+        Check if the game has ended (win or loss).
 
         Returns:
-        - Tuple (over: bool, message: str)
-          - over: True if the game has ended
-          - message: "You won!" if player guessed correctly,
-                     "You lost! The word was '...'" if max attempts reached,
-                     "" otherwise.
+            tuple: (bool, str) where bool indicates if game is over, str contains message
         """
-        # Player wins if last guess matches target word
+        # Win condition: last guess matches target word
         if self.attempts and self.attempts[-1][0] == self.target_word:
             return True, "You won!"
-
-        # Player loses if maximum attempts reached
+        # Loss condition: max attempts reached
         if len(self.attempts) >= self.max_attempts:
             return True, f"You lost! The word was '{self.target_word}'"
-
-        # Game continues
-        return False, ""
+        return False, ""  # Game continues
