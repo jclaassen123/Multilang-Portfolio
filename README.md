@@ -1,1 +1,7 @@
-In this portfolio, I explore three programming languages: Python, Kotlin, and Go. For each language, I create projects in text-based, GUI-based, and web-based formats. Some projects are different versions of the same idea, while others are completely unique, resulting in a collection of nine projects that demonstrate versatility across languages and platforms.
+Portfolio Overview
+This portfolio showcases my exploration of three programming languages: Python, Kotlin, and Go.
+For each language, I have developed projects in three different formats:
+Text-based – command-line or console applications
+GUI-based – interactive desktop applications
+Web-based – web applications and services
+Some projects are variations on the same concept across languages, while others are entirely unique, resulting in a total of nine projects that demonstrate versatility, problem-solving, and adaptability across different programming paradigms and platforms.
