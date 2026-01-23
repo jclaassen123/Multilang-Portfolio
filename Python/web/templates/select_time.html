@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Time Guess Game - Select Time</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+
+    <button class="rules-btn" onclick="showRules()">Rules</button>
+
+    <h2>Select Game Length</h2>
+    <form method="POST">
+        <select name="time" required>
+            {% for t in times %}
+                {% if t < 60 %}
+                    <option value="{{ t }}">{{ "%.2f"|format(t) }} sec</option>
+                {% else %}
+                    {% set mins = t // 60 %}
+                    {% set secs = t % 60 %}
+                    <option value="{{ t }}">{{ mins }}:{% if secs < 10 %}0{% endif %}{{ secs }} min</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+        <button type="submit">Start Game</button>
+    </form>
+</div>
+
+<script>
+function showRules(){
+    alert("Rules:\n1. Choose a username.\n2. Select game length.\n3. Click 'Start' to begin counting.\n4. Click again when you think the time is up.\n5. Your score is how close you were to the target time.\n6. Try to get on the leaderboard!");
+}
+</script>
+</body>
+</html>

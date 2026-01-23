@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Time Guess Game - Play</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+
+    <button class="rules-btn" onclick="showRules()">Rules</button>
+
+    <h2>Time Guess Game</h2>
+    <p>Target Time: {{ "%.2f"|format(chosen_time) }} sec</p>
+
+    <button id="start-btn">Start</button>
+    <div id="status">Click start to begin</div>
+
+    <form id="submit-form" method="POST">
+        <input type="hidden" name="actual_time" id="actual-time">
+    </form>
+</div>
+
+<script>
+let counting = false;
+let startTime = 0;
+
+function showRules(){
+    alert("Rules:\n1. Choose a username.\n2. Select game length.\n3. Click 'Start' to begin counting.\n4. Click again when you think the time is up.\n5. Your score is how close you were to the target time.\n6. Try to get on the leaderboard!");
+}
+
+document.getElementById('start-btn').onclick = function(){
+    const btn = this;
+    const status = document.getElementById('status');
+    const actualTimeInput = document.getElementById('actual-time');
+    const form = document.getElementById('submit-form');
+
+    if(!counting){
+        counting = true;
+        startTime = Date.now();
+        status.textContent = "Counting...";
+        btn.textContent = "Stop";
+    } else {
+        counting = false;
+        let elapsed = ((Date.now() - startTime)/1000).toFixed(2);
+        status.textContent = `You stopped at: ${elapsed} sec`;
+        btn.disabled = true;
+        actualTimeInput.value = elapsed;
+        setTimeout(()=> form.submit(), 1000);
+    }
+}
+</script>
+</body>
+</html>

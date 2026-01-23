@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Time Guess Game - Leaderboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+
+    <button class="rules-btn" onclick="showRules()">Rules</button>
+
+    <h2>Leaderboard (Top 5)</h2>
+    <table id="leaderboard-table">
+        <tr>
+            <th>Username</th>
+            <th>Target Time</th>
+            <th>Distance Away</th>
+        </tr>
+        {% for row in results %}
+            <tr>
+                <td>{{ row.username }}</td>
+                {% if row.chosen_time < 60 %}
+                    <td>{{ "%.2f"|format(row.chosen_time) }} sec</td>
+                {% else %}
+                    {% set mins = row.chosen_time // 60 %}
+                    {% set secs = row.chosen_time % 60 %}
+                    <td>{{ mins }}:{% if secs < 10 %}0{% endif %}{{ secs }} min</td>
+                {% endif %}
+
+                {% if row.distance < 60 %}
+                    <td>{{ "%.2f"|format(row.distance) }} sec</td>
+                {% else %}
+                    {% set mins = row.distance // 60 %}
+                    {% set secs = row.distance % 60 %}
+                    <td>{{ mins }}:{% if secs < 10 %}0{% endif %}{{ secs }} min</td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+    </table>
+
+    <a href="{{ url_for('login') }}"><button>Done</button></a>
+</div>
+
+<script>
+function showRules(){
+    alert("Rules:\n1. Choose a username.\n2. Select game length.\n3. Click 'Start' to begin counting.\n4. Click again when you think the time is up.\n5. Your score is how close you were to the target time.\n6. Try to get on the leaderboard!");
+}
+</script>
+</body>
+</html>

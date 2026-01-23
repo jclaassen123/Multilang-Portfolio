@@ -1,0 +1,77 @@
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to bottom, #a1c4fd, #c2e9fb);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container {
+    background: white;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    width: 400px;
+    text-align: center;
+}
+
+.hidden { display: none; }
+
+button {
+    padding: 15px 30px;
+    font-size: 18px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+#start-btn { background-color: #4CAF50; color: white; }
+button:hover { opacity: 0.9; }
+
+input, select {
+    padding: 10px;
+    font-size: 16px;
+    margin-top: 10px;
+    width: 80%;
+}
+
+/* Leaderboard Table Styles */
+#leaderboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    text-align: center;
+}
+
+#leaderboard-table th, #leaderboard-table td {
+    border: 1px solid #ccc;
+    padding: 10px 15px;
+}
+
+#leaderboard-table th {
+    background-color: #4CAF50;
+    color: white;
+    font-size: 18px;
+}
+
+#leaderboard-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+#leaderboard-table td {
+    font-size: 16px;
+}
+
+.done-btn {
+    background-color: #f44336; /* red */
+    color: white;
+    margin-left: 10px;
+}
+
+.done-btn:hover {
+    opacity: 0.9;
+}

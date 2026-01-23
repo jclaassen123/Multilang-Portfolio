@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Time Guess Game - Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+
+    <!-- RULES BUTTON -->
+    <button class="rules-btn" onclick="showRules()">Rules</button>
+
+    <h1>Welcome to the Time Guess Game</h1>
+    <form method="POST">
+        <input type="text" name="username" placeholder="Enter your username" required>
+        <button type="submit">Start</button>
+    </form>
+</div>
+
+<script>
+function showRules(){
+    alert("Rules:\n1. Choose a username.\n2. Select game length.\n3. Click 'Start' to begin counting.\n4. Click again when you think the time is up.\n5. Your score is how close you were to the target time.\n6. Try to get on the leaderboard!");
+}
+</script>
+</body>
+</html>
