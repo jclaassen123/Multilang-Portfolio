@@ -31,8 +31,9 @@
                 {% if row.distance < 60 %}
                     <td>{{ "%.2f"|format(row.distance) }} sec</td>
                 {% else %}
-                    {% set mins = row.distance // 60 %}
-                    {% set secs = row.distance % 60 %}
+                    {% set total_seconds = row.distance | round(0, 'common') | int %}
+                    {% set mins = total_seconds // 60 %}
+                    {% set secs = total_seconds % 60 %}
                     <td>{{ mins }}:{% if secs < 10 %}0{% endif %}{{ secs }} min</td>
                 {% endif %}
             </tr>
