@@ -1,0 +1,42 @@
+# IntelliJ IDEA project files (ignore workspace, logs, caches)
+/.idea/workspace.xml
+/.idea/tasks.xml
+/.idea/dictionaries
+/.idea/libraries
+/.idea/modules.xml
+/.idea/.name
+
+# Ignore compiler output and build directories
+/out/
+/build/
+/bin/
+
+# Ignore system files
+*.iml
+*.class
+*.log
+*.tmp
+*.swp
+*.DS_Store
+
+# Ignore editor-based HTTP Client requests
+/httpRequests/
+
+# Datasource local storage
+/dataSources/
+/dataSources.local.xml
+
+# Ignore shelf (for IntelliJ shelf files)
+/shelf/
+
+# Gradle wrapper files (keep gradle-wrapper.jar)
+/.gradle/
+/gradle-app.setting
+
+# Ignore OS-specific files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Optional: ignore test output if you have test logs
+/test-output/
