@@ -1,0 +1,52 @@
+# ========================
+# IntelliJ / JetBrains IDE files
+# ========================
+.idea/
+*.iws
+*.iml
+*.ipr
+workspace.xml
+shelf/
+
+# ========================
+# Build / Output folders
+# ========================
+/out/
+/build/
+/bin/
+
+# ========================
+# Kotlin / Java compiled files
+# ========================
+*.class
+*.jar
+*.war
+*.ear
+
+# ========================
+# OS generated files
+# ========================
+.DS_Store
+Thumbs.db
+
+# ========================
+# Logs and temporary files
+# ========================
+*.log
+*.tmp
+*.swp
+*.bak
+
+# ========================
+# HTTP Client / Database files
+# ========================
+/httpRequests/
+/dataSources/
+/dataSources.local.xml
+
+# ========================
+# Optional: Gradle wrapper (if used)
+# ========================
+.gradle/
+/build/
+!gradle/wrapper/gradle-wrapper.jar
