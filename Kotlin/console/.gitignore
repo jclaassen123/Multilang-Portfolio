@@ -40,3 +40,11 @@ Desktop.ini
 
 # Optional: ignore test output if you have test logs
 /test-output/
+
+# IntelliJ IDEA
+/.idea/
+
+# Mac system files
+*.DS_Store
+
+
