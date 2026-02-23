@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Memory Game</title>
+  <link rel="stylesheet" href="/css/game.css">
+</head>
+<body>
+<div class="container">
+  <h1>Memory Game</h1>
+
+  <div class="controls">
+    <label for="board-size">Board Size:</label>
+    <select id="board-size" onchange="startGame(this.value)">
+      <option value="2x3">2 x 3</option>
+      <option value="4x4" selected>4 x 4</option>
+      <option value="4x5">4 x 5</option>
+    </select>
+    <button onclick="resetBoard()">Restart Game</button>
+    <!-- New button -->
+    <button onclick="showInstructions()">How to Play</button>
+  </div>
+
+  <!-- Instruction popup -->
+  <div id="instructions-popup" class="popup">
+    <h2>How to Play</h2>
+    <p>Click on any two tiles to flip them over.<br>
+      If the images match, they stay flipped with a green outline.<br>
+      If they don't match, they flip back after a moment.<br>
+      Match all pairs to win the game!</p>
+    <button onclick="hideInstructions()">Close</button>
+  </div>
+
+  <p>Guesses: <span id="guesses">0</span></p>
+
+  <div id="board"></div>
+</div>
+
+<!-- WIN POPUP -->
+<div id="win-popup" class="popup">Congratulations! You matched all tiles!</div>
+
+<script src="/js/game.js"></script>
+</body>
+</html>
