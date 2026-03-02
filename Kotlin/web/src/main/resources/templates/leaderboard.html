@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Leaderboard</title>
+  <link rel="stylesheet" href="/css/game.css">
+  <link rel="stylesheet" href="/css/leaderboard.css">
+</head>
+<body>
+<div class="container">
+  <h1>🏆 Leaderboard</h1>
+
+  <div class="leaderboard-controls">
+    <label for="board-size">Board Size:</label>
+    <select id="board-size">
+      <option value="2x3">2 x 3</option>
+      <option value="4x4" selected>4 x 4</option>
+      <option value="4x5">4 x 5</option>
+    </select>
+  </div>
+
+  <table id="leaderboard-table" class="leaderboard-table">
+    <thead>
+    <tr>
+      <th>Rank</th>
+      <th>Username</th>
+      <th>Guesses</th>
+      <th>Date</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <div class="leaderboard-footer">
+    <a href="/">← Back to Game</a>
+  </div>
+</div>
+
+<script src="/js/leaderboard.js"></script>
+</body>
+</html>

@@ -128,6 +128,16 @@ function resetBoard() {
  */
 function showWinPopup() {
     const popup = document.getElementById("win-popup");
+
+    // Prompt for username
+    let username = prompt("You won! Enter your username:", "Anonymous") || "Anonymous";
+
+    // Send username to backend along with last tile flip
+    // Assuming tile1Id and tile2Id are set to last flipped tiles
+    fetch(`/api/submit-username/${sessionId}?username=${encodeURIComponent(username)}`, {
+        method: "POST"
+    });
+
     popup.classList.add("show");
     setTimeout(() => popup.classList.remove("show"), 2000);
 }
@@ -146,4 +156,11 @@ function showInstructions() {
 function hideInstructions() {
     const popup = document.getElementById("instructions-popup");
     popup.classList.remove("show");
+}
+
+/**
+ *  Sends player to the leaderboard page
+ */
+function goToLeaderboard() {
+    window.location.href = "/leaderboard";
 }

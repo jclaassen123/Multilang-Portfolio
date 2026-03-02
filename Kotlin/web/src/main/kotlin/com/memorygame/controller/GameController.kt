@@ -2,37 +2,48 @@ package com.example.memorygame.controller
 
 import com.example.memorygame.game.GameBoard
 import com.example.memorygame.game.FlipResult
+import com.example.memorygame.game.GameResult
+import com.example.memorygame.repository.GameResultRepository
 import org.springframework.web.bind.annotation.*
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 /**
- * REST controller that manages the memory game sessions.
- *
- * Provides endpoints to start a new game and flip tiles.
+ * REST controller that handles memory game operations such as starting a game,
+ * flipping tiles, submitting a username for leaderboard, and fetching leaderboard results.
  */
 @RestController
 @RequestMapping("/api")
-class GameController {
+class GameController(
+    private val gameResultRepository: GameResultRepository
+) {
 
-    // Stores active game sessions with a unique session ID
+    // Map to track active game sessions by session ID
     private val sessions = mutableMapOf<String, GameBoard>()
 
     /**
      * Response returned when a new game is started.
-     * @property sessionId unique ID for this game session
-     * @property tiles list of tiles with their IDs and image IDs
-     * @property rows number of rows on the board
-     * @property cols number of columns on the board
+     *
+     * @property sessionId Unique ID for the game session.
+     * @property tiles List of tiles with their IDs and image IDs.
+     * @property rows Number of rows in the game board.
+     * @property cols Number of columns in the game board.
      */
-    data class StartResponse(val sessionId: String, val tiles: List<Map<String, Any>>, val rows: Int, val cols: Int)
+    data class StartResponse(
+        val sessionId: String,
+        val tiles: List<Map<String, Any>>,
+        val rows: Int,
+        val cols: Int
+    )
 
     /**
      * Response returned when a tile is flipped.
-     * @property match indicates a successful match
-     * @property miss indicates a failed match
-     * @property complete indicates the game is complete
-     * @property tile1Id ID of the first flipped tile
-     * @property tile2Id ID of the second flipped tile
+     *
+     * @property match True if the flip resulted in a match.
+     * @property miss True if the flip did not result in a match.
+     * @property complete True if the game is completed after this flip.
+     * @property tile1Id ID of the first flipped tile in the current flip operation.
+     * @property tile2Id ID of the second flipped tile in the current flip operation.
      */
     data class FlipResponse(
         val match: Boolean = false,
@@ -43,27 +54,38 @@ class GameController {
     )
 
     /**
-     * Starts a new memory game session with the given number of rows and columns.
-     * @param rows number of rows for the game board
-     * @param cols number of columns for the game board
-     * @return a StartResponse containing session details and the initial tile list
+     * Starts a new memory game.
+     *
+     * @param rows Number of rows for the game board.
+     * @param cols Number of columns for the game board.
+     * @return StartResponse containing session ID and initial board state.
      */
     @PostMapping("/start")
-    fun startGame(@RequestParam rows: Int, @RequestParam cols: Int): StartResponse {
+    fun startGame(
+        @RequestParam rows: Int,
+        @RequestParam cols: Int
+    ): StartResponse {
+        // Initialize a new game board with 10 unique images
         val board = GameBoard(rows, cols, 10)
         val sessionId = UUID.randomUUID().toString()
         sessions[sessionId] = board
 
-        val tiles = board.tiles.map { mapOf("id" to it.id, "imageId" to it.imageId) }
+        // Convert tiles to a lightweight representation for the client
+        val tiles = board.tiles.map {
+            mapOf("id" to it.id, "imageId" to it.imageId)
+        }
+
         return StartResponse(sessionId, tiles, rows, cols)
     }
 
     /**
-     * Handles flipping a tile in a game session.
-     * @param sessionId the unique ID of the game session
-     * @param tileId the ID of the tile to flip
-     * @param firstTileId optional ID of the first tile flipped in the current turn
-     * @return a FlipResponse indicating the result of the flip
+     * Handles a tile flip in an existing game session.
+     *
+     * @param sessionId ID of the game session.
+     * @param tileId ID of the tile to flip.
+     * @param firstTileId Optional ID of the first tile if this is the second flip.
+     * @return FlipResponse indicating match, miss, or completion status.
+     * @throws IllegalArgumentException if the session does not exist.
      */
     @PostMapping("/flip/{sessionId}/{tileId}")
     fun flip(
@@ -71,20 +93,21 @@ class GameController {
         @PathVariable tileId: Int,
         @RequestParam(required = false) firstTileId: Int?
     ): FlipResponse {
+
         val board = sessions[sessionId] ?: error("Game not found")
         val result = board.flip(tileId, firstTileId)
 
         return when (result) {
-            is FlipResult.Match -> {
-                val complete = board.tiles.all { it.isMatched }
-                FlipResponse(
-                    match = true,
-                    complete = complete,
-                    tile1Id = result.t1.id,
-                    tile2Id = result.t2.id
-                )
-            }
-            is FlipResult.Miss -> FlipResponse(miss = true, tile1Id = result.t1.id, tile2Id = result.t2.id)
+            is FlipResult.Match -> FlipResponse(
+                match = true,
+                tile1Id = result.t1.id,
+                tile2Id = result.t2.id
+            )
+            is FlipResult.Miss -> FlipResponse(
+                miss = true,
+                tile1Id = result.t1.id,
+                tile2Id = result.t2.id
+            )
             is FlipResult.Complete -> FlipResponse(
                 match = true,
                 complete = true,
@@ -93,5 +116,58 @@ class GameController {
             )
             else -> FlipResponse()
         }
+    }
+
+    /**
+     * Retrieves the top 10 leaderboard entries for a given board size.
+     *
+     * @param rows Number of rows in the board.
+     * @param cols Number of columns in the board.
+     * @return List of maps containing username, guesses, and completion date.
+     */
+    @GetMapping("/leaderboard")
+    fun leaderboard(
+        @RequestParam rows: Int,
+        @RequestParam cols: Int
+    ): List<Map<String, Any>> {
+
+        val formatter = DateTimeFormatter.ofPattern("MM-dd-yy")
+
+        return gameResultRepository
+            .findTop10ByRowsAndColsOrderByGuessesAsc(rows, cols)
+            .map {
+                mapOf(
+                    "guesses" to it.guesses,
+                    "completedAt" to it.completedAt.format(formatter),
+                    "username" to it.username
+                )
+            }
+    }
+
+    /**
+     * Submits a username for the current game session and saves the result to the leaderboard.
+     *
+     * @param sessionId ID of the game session.
+     * @param username Player's username.
+     * @return "ok" if successfully saved.
+     * @throws IllegalArgumentException if the session does not exist.
+     */
+    @PostMapping("/submit-username/{sessionId}")
+    fun submitUsername(
+        @PathVariable sessionId: String,
+        @RequestParam username: String
+    ): String {
+        val board = sessions[sessionId] ?: error("Game not found")
+
+        // Save the completed game result
+        val lastResult = GameResult(
+            rows = board.rows,
+            cols = board.cols,
+            guesses = board.guesses,
+            username = username
+        )
+        gameResultRepository.save(lastResult)
+
+        return "ok"
     }
 }
