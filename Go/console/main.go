@@ -7,6 +7,16 @@ import (
 	"strings"
 )
 
+// ANSI color codes
+const (
+	Reset  = "\033[0m"
+	Red    = "\033[31m"
+	Green  = "\033[32m"
+	Yellow = "\033[33m"
+	Blue   = "\033[34m"
+	Cyan   = "\033[36m"
+)
+
 /**
  * Entry point of the game
  * Loops until player chooses to quit
@@ -42,12 +52,12 @@ func runGame() {
 
 	for {
 		if len(deck.Cards) == 0 {
-			fmt.Println("You ran out of cards. You lose! 💀")
+			fmt.Println(Red + "You ran out of cards. You lose!" + Reset)
 			return
 		}
 
-		fmt.Println("\nCurrent streak:", streak)
-		fmt.Println("Cards left in deck:", len(deck.Cards))
+fmt.Println(Cyan + fmt.Sprintf("\nCurrent streak: %d / 4", streak) + Reset)
+fmt.Println(Cyan + fmt.Sprintf("Cards left in deck: %d", len(deck.Cards)) + Reset)
 
 		switch streak {
 		case 0:
@@ -77,7 +87,7 @@ func runGame() {
 		case 3:
 			success := roundGuessSuit(reader, &deck)
 			if success {
-				fmt.Println("\n🎉 Correct! You guessed 4 in a row. You win!")
+				fmt.Println("\n" + Green + "Correct! You guessed 4 in a row. You win!" + Reset)
 				return
 			} else {
 				streak = 0
@@ -99,10 +109,10 @@ func printInstructions() {
 	fmt.Println("If you guess wrong, your streak resets and you start over at Round 1.")
 	fmt.Println("If you run out of cards before completing 4 rounds, you lose.\n")
 	fmt.Println("Valid responses are shown next to each question.\n")
-	fmt.Println("Q1. Guess the color (Red or Black) – valid responses: red, black, r, b")
-	fmt.Println("Q2. Guess if next card is Higher or Lower – valid responses: higher, lower, h, l")
-	fmt.Println("Q3. Guess if next card is Inside or Outside previous two cards – valid responses: inside, outside, i, o")
-	fmt.Println("Q4. Guess the suit (Hearts, Diamonds, Clubs, Spades) – valid responses: hearts, diamonds, clubs, spades, h, d, c, s")
+	fmt.Println("Q1. Guess the color (Red or Black) - valid responses: red, black, r, b")
+	fmt.Println("Q2. Guess if next card is Higher or Lower - valid responses: higher, lower, h, l")
+	fmt.Println("Q3. Guess if next card is Inside or Outside previous two cards - valid responses: inside, outside, i, o")
+	fmt.Println("Q4. Guess the suit (Hearts, Diamonds, Clubs, Spades) - valid responses: hearts, diamonds, clubs, spades, h, d, c, s")
 	fmt.Println("Type your guess and press Enter.\nGood luck!")
 	fmt.Println("======================================\n")
 }
@@ -122,21 +132,21 @@ func roundRedOrBlack(reader *bufio.Reader, deck *Deck) Card {
 		if input == "r" || input == "red" || input == "b" || input == "black" {
 			card, ok = deck.Draw()
 			if !ok {
-				fmt.Println("Out of cards!")
+				fmt.Println(Red + "Out of cards!" + Reset)
 				return Card{}
 			}
 			break
 		}
-		fmt.Println("\nInvalid input! Please enter r/red or b/black.\n")
+		fmt.Println(Yellow + "\nInvalid input! Please enter r/red or b/black.\n" + Reset)
 	}
 
-	fmt.Println("\nCard drawn:", card.Name, "of", card.Suit)
+	fmt.Println("\n" + Blue + "Card drawn:" , card.Name , "of" , card.Suit + Reset)
 	if (isRed(card) && (input == "red" || input == "r")) ||
 		(!isRed(card) && (input == "black" || input == "b")) {
-		fmt.Println("🟢 Correct!")
+		fmt.Println(Green + "Correct!" + Reset)
 		return card
 	}
-	fmt.Println("❌ Wrong!")
+	fmt.Println(Red + "Wrong!" + Reset)
 	return Card{}
 }
 
@@ -155,21 +165,21 @@ func roundHigherOrLower(reader *bufio.Reader, deck *Deck, firstCard Card) Card {
 		if input == "higher" || input == "h" || input == "lower" || input == "l" {
 			card, ok = deck.Draw()
 			if !ok {
-				fmt.Println("Out of cards!")
+				fmt.Println(Red + "Out of cards!" + Reset)
 				return Card{}
 			}
 			break
 		}
-		fmt.Println("\nInvalid input! Please enter h/higher or l/lower.\n")
+		fmt.Println(Yellow + "\nInvalid input! Please enter h/higher or l/lower.\n" + Reset)
 	}
 
-	fmt.Println("\nCard drawn:", card.Name, "of", card.Suit)
+	fmt.Println("\n" + Blue + "Card drawn:" , card.Name , "of" , card.Suit + Reset)
 	if (input == "higher" || input == "h") && card.Value > firstCard.Value ||
 		(input == "lower" || input == "l") && card.Value < firstCard.Value {
-		fmt.Println("🟢 Correct!")
+		fmt.Println(Green + "Correct!" + Reset)
 		return card
 	}
-	fmt.Println("❌ Wrong!")
+	fmt.Println(Red + "Wrong!" + Reset)
 	return Card{}
 }
 
@@ -191,21 +201,21 @@ func roundInsideOrOutside(reader *bufio.Reader, deck *Deck, firstCard, secondCar
 		if input == "inside" || input == "i" || input == "outside" || input == "o" {
 			card, ok = deck.Draw()
 			if !ok {
-				fmt.Println("Out of cards!")
+				fmt.Println(Red + "Out of cards!" + Reset)
 				return false
 			}
 			break
 		}
-		fmt.Println("\nInvalid input! Please enter i/inside or o/outside.\n")
+		fmt.Println(Yellow + "\nInvalid input! Please enter i/inside or o/outside.\n" + Reset)
 	}
 
-	fmt.Println("\nCard drawn:", card.Name, "of", card.Suit)
+	fmt.Println("\n" + Blue + "Card drawn:" , card.Name , "of" , card.Suit + Reset)
 	correct := (input == "inside" || input == "i") && card.Value > low && card.Value < high ||
 		(input == "outside" || input == "o") && (card.Value < low || card.Value > high)
 	if correct {
-		fmt.Println("🟢 Correct!")
+		fmt.Println(Green + "Correct!" + Reset)
 	} else {
-		fmt.Println("❌ Wrong!")
+		fmt.Println(Red + "Wrong!" + Reset)
 	}
 	return correct
 }
@@ -228,24 +238,24 @@ func roundGuessSuit(reader *bufio.Reader, deck *Deck) bool {
 			input == "spades" || input == "s" {
 			card, ok = deck.Draw()
 			if !ok {
-				fmt.Println("Out of cards!")
+				fmt.Println(Red + "Out of cards!" + Reset)
 				return false
 			}
 			break
 		}
-		fmt.Println("\nInvalid input! Please enter h/d/c/s or full suit name.\n")
+		fmt.Println(Yellow + "\nInvalid input! Please enter h/d/c/s or full suit name.\n" + Reset)
 	}
 
-	fmt.Println("\nCard drawn:", card.Name, "of", card.Suit)
+	fmt.Println("\n" + Blue + "Card drawn:" , card.Name , "of" , card.Suit + Reset)
 	correct := strings.EqualFold(input, card.Suit) ||
 		(input == "h" && card.Suit == "Hearts") ||
 		(input == "d" && card.Suit == "Diamonds") ||
 		(input == "c" && card.Suit == "Clubs") ||
 		(input == "s" && card.Suit == "Spades")
 	if correct {
-		fmt.Println("🟢 Correct!")
+		fmt.Println(Green + "Correct!" + Reset)
 	} else {
-		fmt.Println("❌ Wrong!")
+		fmt.Println(Red + "Wrong!" + Reset)
 	}
 	return correct
 }
