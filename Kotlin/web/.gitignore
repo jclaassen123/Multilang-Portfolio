@@ -1,53 +1,46 @@
 # -----------------------
-# Project & Build
+# macOS / system files
 # -----------------------
-HELP.md
-.gradle/
+.DS_Store
+
+# -----------------------
+# Project & build outputs
+# -----------------------
 build/
+out/
+bin/
+
+# H2 database / local data folder
+data/
+
+# Gradle cache / local files
+.gradle/
+
+# Gradle wrapper should NOT be ignored
 !gradle/wrapper/gradle-wrapper.jar
 
-# Include build outputs from src folders
-!**/src/main/**/build/
-!**/src/test/**/build/
-
 # -----------------------
-# STS / Spring Tools
+# IDE / editor
 # -----------------------
-.apt_generated/
+# IntelliJ
+.idea/
+*.iml
+*.iws
+*.ipr
+# Eclipse / STS
 .classpath
-.factorypath
 .project
 .settings/
 .springBeans
+.apt_generated/
 .sts4-cache/
-bin/
-!**/src/main/**/bin/
-!**/src/test/**/bin/
-
-# -----------------------
-# IntelliJ IDEA
-# -----------------------
-.idea/
-*.iws
-*.iml
-*.ipr
-out/
-!**/src/main/**/out/
-!**/src/test/**/out/
-
-# -----------------------
 # NetBeans
-# -----------------------
 /nbproject/private/
 /nbbuild/
 /dist/
 /nbdist/
 /.nb-gradle/
-
-# -----------------------
-# VS Code
-# -----------------------
-.vscode/
+/.vscode/
 
 # -----------------------
 # Kotlin
