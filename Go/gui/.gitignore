@@ -1,0 +1,30 @@
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.out
+
+# Go build/test artifacts
+bin/
+dist/
+coverage.out
+*.test
+
+# Dependency/vendor folders (not used here, but safe defaults)
+vendor/
+
+# IDE/editor files
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment files
+.env
+.env.*
+
+# Local logs
+*.log
