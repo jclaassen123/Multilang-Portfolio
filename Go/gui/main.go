@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"image/color"
 	"log"
+	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -52,8 +53,9 @@ type Game struct {
 	sprites CardSprites
 	buttons []Button
 
-	mouseWasDown bool
-	quit         bool
+	mouseWasDown    bool
+	quit            bool
+	showInstructions bool
 }
 
 // NewGame initializes the game state and loads the card sprite assets.
@@ -262,16 +264,33 @@ func (g *Game) Update() error {
 	if isDown && !g.mouseWasDown {
 		mx, my := ebiten.CursorPosition()
 
-		// Walk the active buttons and fire the first one that contains the cursor.
-		for _, b := range g.buttons {
-			if mx >= b.X && mx <= b.X+b.W && my >= b.Y && my <= b.Y+b.H {
-				b.Action()
-				break
-			}
+		// Utility controls stay available regardless of game state.
+		if g.handleButtonClick(g.utilityButtons(), mx, my) {
+			g.mouseWasDown = isDown
+			return nil
 		}
+
+		if g.showInstructions {
+			g.handleButtonClick(g.instructionButtons(), mx, my)
+			g.mouseWasDown = isDown
+			return nil
+		}
+
+		// Walk the active buttons and fire the first one that contains the cursor.
+		g.handleButtonClick(g.buttons, mx, my)
 	}
 	g.mouseWasDown = isDown
 	return nil
+}
+
+func (g *Game) handleButtonClick(buttons []Button, mx, my int) bool {
+	for _, b := range buttons {
+		if mx >= b.X && mx <= b.X+b.W && my >= b.Y && my <= b.Y+b.H {
+			b.Action()
+			return true
+		}
+	}
+	return false
 }
 
 // Draw renders the full game scene for the current state.
@@ -301,6 +320,56 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	drawCenteredQuestion(screen, g.question, 18, 566, 988)
 
 	for _, b := range g.buttons {
+		g.drawButton(screen, b)
+	}
+	for _, b := range g.utilityButtons() {
+		g.drawButton(screen, b)
+	}
+
+	if g.showInstructions {
+		g.drawInstructionsModal(screen)
+	}
+}
+
+func (g *Game) utilityButtons() []Button {
+	return []Button{
+		{X: 728, Y: 34, W: 120, H: 42, Label: "How to Play", Fill: color.RGBA{191, 152, 64, 255}, Action: func() { g.showInstructions = true }},
+		{X: 866, Y: 34, W: 100, H: 42, Label: "Quit", Fill: color.RGBA{121, 44, 44, 255}, Action: func() { g.quit = true }},
+	}
+}
+
+func (g *Game) instructionButtons() []Button {
+	return []Button{
+		{X: 442, Y: 526, W: 140, H: 40, Label: "Close", Fill: color.RGBA{57, 110, 198, 255}, Action: func() { g.showInstructions = false }},
+	}
+}
+
+func (g *Game) drawInstructionsModal(screen *ebiten.Image) {
+	ebitenutil.DrawRect(screen, 0, 0, screenWidth, screenHeight, color.RGBA{0, 0, 0, 170})
+	ebitenutil.DrawRect(screen, 198, 118, 628, 458, color.RGBA{241, 231, 202, 255})
+	ebitenutil.DrawRect(screen, 206, 126, 612, 442, color.RGBA{32, 74, 45, 255})
+
+	ebitenutil.DebugPrintAt(screen, "HOW TO PLAY", 467, 158)
+
+	paragraphs := []string{
+		"The goal is to guess correctly 4 times in a row before the deck runs out of cards.",
+		"1. Guess whether the first card is red or black.",
+		"2. Guess whether the next card is higher or lower.",
+		"3. Guess whether the third card is inside or outside the values of the first two cards.",
+		"4. Guess the exact suit of the final card.",
+		"A wrong guess sends you back to Round 1. You can open these instructions or quit at any time.",
+	}
+
+	y := 220
+	for _, paragraph := range paragraphs {
+		for _, line := range wrapText(paragraph, 72) {
+			ebitenutil.DebugPrintAt(screen, line, 224, y)
+			y += 24
+		}
+		y += 10
+	}
+
+	for _, b := range g.instructionButtons() {
 		g.drawButton(screen, b)
 	}
 }
@@ -435,6 +504,30 @@ func wrapQuestion(s string, limit int) []string {
 
 	// Return at most two lines; longer text is left to the caller to avoid overcomplicating layout.
 	return []string{s[:split], s[split+1:]}
+}
+
+func wrapText(s string, limit int) []string {
+	if len(s) <= limit {
+		return []string{s}
+	}
+
+	words := strings.Fields(s)
+	if len(words) == 0 {
+		return []string{""}
+	}
+
+	lines := make([]string, 0, len(words))
+	current := words[0]
+	for _, word := range words[1:] {
+		if len(current)+1+len(word) <= limit {
+			current += " " + word
+			continue
+		}
+		lines = append(lines, current)
+		current = word
+	}
+	lines = append(lines, current)
+	return lines
 }
 
 // Layout reports the logical screen size used by Ebiten.
