@@ -15,13 +15,16 @@ type CardSprites struct {
 	H     int
 }
 
+// loadCardSprites loads the sprite sheet at path and slices it into face and back images.
 func loadCardSprites(path string) (CardSprites, error) {
+	// Open the sprite sheet asset from disk before decoding it.
 	file, err := os.Open(path)
 	if err != nil {
 		return CardSprites{}, err
 	}
 	defer file.Close()
 
+	// Decode the PNG so Ebiten can turn it into a drawable image.
 	img, err := png.Decode(file)
 	if err != nil {
 		return CardSprites{}, err
@@ -39,6 +42,7 @@ func loadCardSprites(path string) (CardSprites, error) {
 	suits := []string{"Spades", "Clubs", "Diamonds", "Hearts"}
 	ranks := []string{"Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King"}
 
+	// Slice the first four rows into the standard 52 face cards.
 	faces := make(map[string]*ebiten.Image, 52)
 	for row := 0; row < 4; row++ {
 		for col := 0; col < 13; col++ {
@@ -55,6 +59,7 @@ func loadCardSprites(path string) (CardSprites, error) {
 	backRect := image.Rect(10*cellW, 4*cellH, 11*cellW, 5*cellH)
 	back := sheet.SubImage(backRect).(*ebiten.Image)
 
+	// Return both the image lookup table and the raw sprite dimensions.
 	return CardSprites{
 		Faces: faces,
 		Back:  back,
