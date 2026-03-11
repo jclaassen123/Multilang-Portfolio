@@ -53,8 +53,8 @@ type Game struct {
 	sprites CardSprites
 	buttons []Button
 
-	mouseWasDown    bool
-	quit            bool
+	mouseWasDown     bool
+	quit             bool
 	showInstructions bool
 }
 
