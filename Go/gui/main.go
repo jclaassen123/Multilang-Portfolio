@@ -283,6 +283,7 @@ func (g *Game) Update() error {
 	return nil
 }
 
+// handleButtonClick triggers the first button containing the given mouse position.
 func (g *Game) handleButtonClick(buttons []Button, mx, my int) bool {
 	for _, b := range buttons {
 		if mx >= b.X && mx <= b.X+b.W && my >= b.Y && my <= b.Y+b.H {
@@ -331,6 +332,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	}
 }
 
+// utilityButtons returns the always-available top-bar controls.
 func (g *Game) utilityButtons() []Button {
 	return []Button{
 		{X: 728, Y: 34, W: 120, H: 42, Label: "How to Play", Fill: color.RGBA{191, 152, 64, 255}, Action: func() { g.showInstructions = true }},
@@ -338,12 +340,14 @@ func (g *Game) utilityButtons() []Button {
 	}
 }
 
+// instructionButtons returns the controls shown inside the instructions modal.
 func (g *Game) instructionButtons() []Button {
 	return []Button{
 		{X: 442, Y: 526, W: 140, H: 40, Label: "Close", Fill: color.RGBA{57, 110, 198, 255}, Action: func() { g.showInstructions = false }},
 	}
 }
 
+// drawInstructionsModal renders the how-to-play overlay and its close button.
 func (g *Game) drawInstructionsModal(screen *ebiten.Image) {
 	ebitenutil.DrawRect(screen, 0, 0, screenWidth, screenHeight, color.RGBA{0, 0, 0, 170})
 	ebitenutil.DrawRect(screen, 198, 118, 628, 458, color.RGBA{241, 231, 202, 255})
@@ -506,6 +510,7 @@ func wrapQuestion(s string, limit int) []string {
 	return []string{s[:split], s[split+1:]}
 }
 
+// wrapText breaks a paragraph into lines that fit within the given character limit.
 func wrapText(s string, limit int) []string {
 	if len(s) <= limit {
 		return []string{s}
