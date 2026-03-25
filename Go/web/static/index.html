@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2048</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="page-shell">
+    <div class="ambient ambient-left"></div>
+    <div class="ambient ambient-right"></div>
+
+    <main class="app-card">
+      <section class="hero">
+        <div>
+          <h1>2048</h1>
+          <p class="subtitle">Slide the tiles, combine matching numbers, and chase the 2048 tile.</p>
+        </div>
+
+        <div class="hero-actions">
+          <button id="info-button" class="secondary-button" type="button">Info</button>
+          <button id="exit-button" class="danger-button" type="button">Exit</button>
+        </div>
+      </section>
+
+      <section class="status-bar">
+        <div class="score-card">
+          <span class="score-label">Score</span>
+          <strong id="score">0</strong>
+        </div>
+
+        <div class="score-card">
+          <span class="score-label">Best</span>
+          <strong id="best-score">0</strong>
+        </div>
+
+        <button id="new-game-button" class="primary-button" type="button">New Game</button>
+      </section>
+
+      <section class="board-panel">
+        <div class="board-header">
+          <p>Controls: Arrow keys or WASD</p>
+        </div>
+
+        <div id="board" class="board" aria-label="2048 game board"></div>
+
+        <div id="overlay" class="overlay hidden" aria-live="polite">
+          <div class="overlay-card">
+            <h2 id="overlay-title">Game Over</h2>
+            <p id="overlay-message">No more valid moves. Start a new game and try again.</p>
+            <button id="overlay-button" class="primary-button" type="button">Play Again</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="info-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="info-title">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="info-title">How to Play</h2>
+        <button id="close-modal-button" class="icon-button" type="button" aria-label="Close rules dialog">×</button>
+      </div>
+      <p>Use the arrow keys or the W, A, S, and D keys to move every tile on the board at once.</p>
+      <p>When two tiles with the same number collide, they merge into one tile with their total value.</p>
+      <p>After each move, a new tile appears. Reach the 2048 tile to win, and keep going for a higher score if you want.</p>
+      <p>If the board fills up and no merges are possible, the game ends.</p>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

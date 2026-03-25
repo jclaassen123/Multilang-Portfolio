@@ -1,0 +1,32 @@
+# Go build artifacts
+.cache/
+bin/
+dist/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Coverage and profiling output
+coverage/
+coverage.out
+*.coverprofile
+*.prof
+
+# Logs
+*.log
+
+# IDE and OS files
+.DS_Store
+.idea/
+.vscode/
+
+# Environment files
+.env
+.env.*
+
+# Local dependency or vendored folders
+vendor/
